@@ -1,0 +1,49 @@
+# Build outputs
+dist/
+build/
+*.spec.bak
+
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+*.egg-info/
+.venv/
+venv/
+env/
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# OS
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# UPX folder (se vuelve a descargar si hace falta)
+upx-*-win64/
+upx-*-win32/
+
+# El .exe compilado (mejor distribuirlo via GitHub Releases, no en el repo)
+*.exe
+
+# Modelos de Whisper si quedan en la carpeta por error
+*.bin
+models/
+
+# Archivos de prueba pesados que el usuario haya dejado
+*.mp4
+*.mp3
+*.mkv
+*.avi
+*.mov
+*.wav
+*.m4a
+*.flac
+*.webm

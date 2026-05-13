@@ -1,0 +1,925 @@
+<!DOCTYPE html>
+<html lang="es" data-theme="dark">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="SubFlow — Editor de subtítulos con transcripción automática local. Gratis, sin internet, sin API keys.">
+  <meta name="theme-color" content="#0d0d0d">
+
+  <title>SubFlow — Editor de subtítulos con transcripción automática</title>
+
+  <link rel="icon" type="image/x-icon" href="SubFlow.ico">
+
+  <meta property="og:title" content="SubFlow — Editor de subtítulos con transcripción automática">
+  <meta property="og:description" content="Transcribe y edita subtítulos en tu computadora, sin enviar audio a la nube. Gratis y open source.">
+  <meta property="og:type" content="website">
+  <meta name="twitter:card" content="summary_large_image">
+
+  <style>
+    /* ====================================================== */
+    /*  Variables: tema oscuro (default)                      */
+    /* ====================================================== */
+    :root,
+    [data-theme="dark"] {
+      --bg: #0a0a0b;
+      --bg-elev: #131316;
+      --bg-card: #1c1c20;
+      --border: #2a2a2e;
+      --border-strong: #3a3a3f;
+      --text: #f4f4f5;
+      --text-dim: #a1a1aa;
+      --text-dimmer: #71717a;
+      --accent: #fbbf24;
+      --accent-hover: #f59e0b;
+      --accent-soft: rgba(251, 191, 36, 0.12);
+      --gradient-1: #fbbf24;
+      --gradient-2: #ec4899;
+      --shadow: 0 30px 80px rgba(0, 0, 0, 0.5);
+      --shadow-soft: 0 4px 20px rgba(0, 0, 0, 0.3);
+    }
+
+    /* ====================================================== */
+    /*  Variables: tema claro                                 */
+    /* ====================================================== */
+    [data-theme="light"] {
+      --bg: #fafafa;
+      --bg-elev: #ffffff;
+      --bg-card: #ffffff;
+      --border: #e4e4e7;
+      --border-strong: #d4d4d8;
+      --text: #18181b;
+      --text-dim: #52525b;
+      --text-dimmer: #71717a;
+      --accent: #d97706;
+      --accent-hover: #b45309;
+      --accent-soft: rgba(217, 119, 6, 0.10);
+      --gradient-1: #d97706;
+      --gradient-2: #db2777;
+      --shadow: 0 30px 80px rgba(0, 0, 0, 0.12);
+      --shadow-soft: 0 4px 20px rgba(0, 0, 0, 0.06);
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Inter", "Segoe UI", Roboto,
+                   "Helvetica Neue", Arial, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      line-height: 1.6;
+      -webkit-font-smoothing: antialiased;
+      -moz-osx-font-smoothing: grayscale;
+      transition: background-color 0.3s ease, color 0.3s ease;
+      overflow-x: hidden;
+    }
+
+    /* Resaltado de seleccion de texto */
+    ::selection {
+      background: var(--accent-soft);
+      color: var(--accent);
+    }
+
+    /* Scrollbar */
+    ::-webkit-scrollbar { width: 10px; height: 10px; }
+    ::-webkit-scrollbar-track { background: var(--bg); }
+    ::-webkit-scrollbar-thumb { background: var(--border-strong); border-radius: 5px; }
+    ::-webkit-scrollbar-thumb:hover { background: var(--text-dimmer); }
+
+    /* ====================================================== */
+    /*  Animaciones                                           */
+    /* ====================================================== */
+    @keyframes fadeInUp {
+      from { opacity: 0; transform: translateY(20px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    @keyframes float {
+      0%, 100% { transform: translateY(0); }
+      50% { transform: translateY(-8px); }
+    }
+
+    @keyframes pulse-glow {
+      0%, 100% { box-shadow: 0 0 0 0 var(--accent-soft); }
+      50% { box-shadow: 0 0 0 16px transparent; }
+    }
+
+    @keyframes gradient-shift {
+      0%, 100% { background-position: 0% 50%; }
+      50% { background-position: 100% 50%; }
+    }
+
+    /* Para elementos que aparecen al hacer scroll */
+    .reveal {
+      opacity: 0;
+      transform: translateY(24px);
+      transition: opacity 0.7s ease, transform 0.7s ease;
+    }
+
+    .reveal.visible {
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    /* ====================================================== */
+    /*  Navegacion                                            */
+    /* ====================================================== */
+
+    nav {
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      background: color-mix(in srgb, var(--bg) 85%, transparent);
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
+      border-bottom: 1px solid var(--border);
+      transition: background-color 0.3s ease, border-color 0.3s ease;
+    }
+
+    .nav-inner {
+      max-width: 1120px;
+      margin: 0 auto;
+      padding: 14px 24px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .nav-brand {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-weight: 700;
+      font-size: 18px;
+      letter-spacing: -0.01em;
+      text-decoration: none;
+      color: inherit;
+    }
+
+    .nav-brand img {
+      width: 28px;
+      height: 28px;
+      transition: transform 0.3s ease;
+    }
+
+    .nav-brand:hover img { transform: rotate(-8deg) scale(1.1); }
+
+    .nav-links {
+      display: flex;
+      gap: 24px;
+      align-items: center;
+    }
+
+    .nav-links a {
+      color: var(--text-dim);
+      text-decoration: none;
+      font-size: 14px;
+      font-weight: 500;
+      transition: color 0.2s ease;
+    }
+
+    .nav-links a:hover { color: var(--text); }
+
+    .nav-cta {
+      background: var(--accent);
+      color: var(--bg) !important;
+      padding: 8px 16px;
+      border-radius: 8px;
+      font-weight: 600;
+      transition: all 0.2s ease;
+    }
+
+    .nav-cta:hover {
+      background: var(--accent-hover);
+      transform: translateY(-1px);
+      box-shadow: var(--shadow-soft);
+    }
+
+    /* Theme toggle button */
+    .theme-toggle {
+      width: 36px;
+      height: 36px;
+      border-radius: 8px;
+      border: 1px solid var(--border);
+      background: var(--bg-elev);
+      color: var(--text);
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: all 0.2s ease;
+      font-size: 16px;
+    }
+
+    .theme-toggle:hover {
+      background: var(--bg-card);
+      border-color: var(--border-strong);
+      transform: rotate(15deg);
+    }
+
+    @media (max-width: 720px) {
+      .nav-links a:not(.nav-cta):not(.theme-toggle) { display: none; }
+    }
+
+    /* ====================================================== */
+    /*  Hero                                                  */
+    /* ====================================================== */
+
+    .hero {
+      max-width: 1120px;
+      margin: 0 auto;
+      padding: 100px 24px 80px;
+      text-align: center;
+      position: relative;
+      animation: fadeInUp 0.8s ease;
+    }
+
+    .hero::before {
+      content: "";
+      position: absolute;
+      top: -300px; left: 50%;
+      transform: translateX(-50%);
+      width: 900px; height: 700px;
+      background: radial-gradient(ellipse at center, var(--accent-soft) 0%, transparent 60%);
+      pointer-events: none;
+      z-index: -1;
+    }
+
+    .hero-logo {
+      width: 110px;
+      height: 110px;
+      margin: 0 auto 28px;
+      display: block;
+      animation: float 4s ease-in-out infinite;
+      filter: drop-shadow(0 12px 24px rgba(0, 0, 0, 0.3));
+    }
+
+    .hero-eyebrow {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 13px;
+      font-weight: 600;
+      letter-spacing: 0.04em;
+      color: var(--accent);
+      background: var(--accent-soft);
+      border: 1px solid color-mix(in srgb, var(--accent) 30%, transparent);
+      padding: 8px 16px;
+      border-radius: 100px;
+      margin-bottom: 28px;
+      animation: pulse-glow 3s ease-in-out infinite;
+    }
+
+    .hero-eyebrow::before {
+      content: "";
+      width: 6px; height: 6px;
+      border-radius: 50%;
+      background: var(--accent);
+      box-shadow: 0 0 8px var(--accent);
+    }
+
+    h1 {
+      font-size: clamp(38px, 6vw, 68px);
+      font-weight: 800;
+      line-height: 1.05;
+      letter-spacing: -0.025em;
+      margin-bottom: 24px;
+    }
+
+    h1 .accent {
+      background: linear-gradient(135deg, var(--gradient-1), var(--gradient-2), var(--gradient-1));
+      background-size: 200% auto;
+      -webkit-background-clip: text;
+      background-clip: text;
+      color: transparent;
+      animation: gradient-shift 6s ease-in-out infinite;
+    }
+
+    .hero p {
+      font-size: clamp(17px, 2vw, 21px);
+      color: var(--text-dim);
+      max-width: 700px;
+      margin: 0 auto 40px;
+      line-height: 1.55;
+    }
+
+    .hero-buttons {
+      display: flex;
+      gap: 14px;
+      justify-content: center;
+      flex-wrap: wrap;
+    }
+
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      padding: 15px 28px;
+      border-radius: 10px;
+      font-weight: 600;
+      font-size: 15px;
+      text-decoration: none;
+      transition: all 0.2s ease;
+      cursor: pointer;
+      border: none;
+      letter-spacing: -0.005em;
+    }
+
+    .btn-primary {
+      background: var(--accent);
+      color: var(--bg);
+      box-shadow: 0 8px 20px color-mix(in srgb, var(--accent) 30%, transparent);
+    }
+
+    .btn-primary:hover {
+      background: var(--accent-hover);
+      transform: translateY(-2px);
+      box-shadow: 0 12px 28px color-mix(in srgb, var(--accent) 45%, transparent);
+    }
+
+    .btn-primary:active { transform: translateY(0); }
+
+    .btn-secondary {
+      background: var(--bg-elev);
+      color: var(--text);
+      border: 1px solid var(--border);
+    }
+
+    .btn-secondary:hover {
+      background: var(--bg-card);
+      border-color: var(--border-strong);
+      transform: translateY(-1px);
+    }
+
+    .hero-meta {
+      margin-top: 36px;
+      font-size: 13px;
+      color: var(--text-dimmer);
+      display: flex;
+      gap: 28px;
+      justify-content: center;
+      flex-wrap: wrap;
+    }
+
+    .hero-meta span { display: inline-flex; align-items: center; gap: 6px; }
+
+    /* ====================================================== */
+    /*  Screenshot                                            */
+    /* ====================================================== */
+
+    .screenshot-wrap {
+      max-width: 1120px;
+      margin: 0 auto;
+      padding: 0 24px 100px;
+    }
+
+    .screenshot {
+      width: 100%;
+      border-radius: 14px;
+      border: 1px solid var(--border);
+      box-shadow: var(--shadow);
+      background: var(--bg-elev);
+      aspect-ratio: 16 / 9;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: var(--text-dimmer);
+      font-size: 14px;
+      overflow: hidden;
+      transition: transform 0.4s ease, box-shadow 0.4s ease;
+    }
+
+    .screenshot:hover {
+      transform: translateY(-4px) scale(1.005);
+    }
+
+    .screenshot img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      display: block;
+    }
+
+    /* ====================================================== */
+    /*  Sections                                              */
+    /* ====================================================== */
+
+    section { padding: 90px 24px; }
+
+    .section-inner { max-width: 1120px; margin: 0 auto; }
+
+    .section-header { text-align: center; margin-bottom: 64px; }
+
+    .section-header h2 {
+      font-size: clamp(28px, 4vw, 42px);
+      font-weight: 700;
+      letter-spacing: -0.025em;
+      margin-bottom: 14px;
+    }
+
+    .section-header p {
+      color: var(--text-dim);
+      font-size: 17px;
+      max-width: 580px;
+      margin: 0 auto;
+    }
+
+    /* ====================================================== */
+    /*  Features                                              */
+    /* ====================================================== */
+
+    #features {
+      background: var(--bg-elev);
+      border-top: 1px solid var(--border);
+      border-bottom: 1px solid var(--border);
+      transition: background-color 0.3s ease;
+    }
+
+    .features-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 20px;
+    }
+
+    .feature {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 28px;
+      transition: transform 0.25s ease, border-color 0.25s ease, box-shadow 0.25s ease;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .feature::before {
+      content: "";
+      position: absolute;
+      top: 0; left: 0;
+      width: 100%; height: 2px;
+      background: linear-gradient(90deg, var(--accent), transparent);
+      opacity: 0;
+      transition: opacity 0.25s ease;
+    }
+
+    .feature:hover {
+      transform: translateY(-4px);
+      border-color: color-mix(in srgb, var(--accent) 40%, var(--border));
+      box-shadow: var(--shadow-soft);
+    }
+
+    .feature:hover::before { opacity: 1; }
+
+    .feature-icon {
+      width: 48px;
+      height: 48px;
+      border-radius: 12px;
+      background: var(--accent-soft);
+      color: var(--accent);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin-bottom: 20px;
+      font-size: 22px;
+      transition: transform 0.25s ease;
+    }
+
+    .feature:hover .feature-icon {
+      transform: scale(1.1) rotate(-6deg);
+    }
+
+    .feature h3 {
+      font-size: 17px;
+      font-weight: 600;
+      margin-bottom: 8px;
+      letter-spacing: -0.01em;
+    }
+
+    .feature p {
+      color: var(--text-dim);
+      font-size: 14px;
+      line-height: 1.6;
+    }
+
+    /* ====================================================== */
+    /*  How it works                                          */
+    /* ====================================================== */
+
+    .steps {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+      gap: 36px;
+      counter-reset: step;
+    }
+
+    .step {
+      position: relative;
+      padding-top: 64px;
+    }
+
+    .step::before {
+      counter-increment: step;
+      content: counter(step);
+      position: absolute;
+      top: 0; left: 0;
+      width: 48px; height: 48px;
+      border-radius: 50%;
+      background: var(--accent-soft);
+      color: var(--accent);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 700;
+      font-size: 20px;
+      border: 1px solid color-mix(in srgb, var(--accent) 40%, transparent);
+      transition: transform 0.3s ease, background-color 0.3s ease;
+    }
+
+    .step:hover::before {
+      transform: scale(1.1);
+      background: var(--accent);
+      color: var(--bg);
+    }
+
+    .step h3 {
+      font-size: 19px;
+      margin-bottom: 10px;
+      letter-spacing: -0.01em;
+    }
+
+    .step p {
+      color: var(--text-dim);
+      font-size: 15px;
+    }
+
+    /* ====================================================== */
+    /*  Tech                                                  */
+    /* ====================================================== */
+
+    #tech {
+      background: var(--bg-elev);
+      border-top: 1px solid var(--border);
+      border-bottom: 1px solid var(--border);
+      transition: background-color 0.3s ease;
+    }
+
+    .tech-grid {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 12px;
+      justify-content: center;
+    }
+
+    .tech-chip {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      padding: 10px 20px;
+      border-radius: 100px;
+      font-size: 14px;
+      color: var(--text-dim);
+      font-weight: 500;
+      transition: all 0.2s ease;
+    }
+
+    .tech-chip:hover {
+      transform: translateY(-2px);
+      border-color: var(--accent);
+      color: var(--accent);
+    }
+
+    /* ====================================================== */
+    /*  Download CTA                                          */
+    /* ====================================================== */
+
+    .download-card {
+      max-width: 720px;
+      margin: 0 auto;
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: 56px 40px;
+      text-align: center;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .download-card::before {
+      content: "";
+      position: absolute;
+      top: -50%; left: -50%;
+      width: 200%; height: 200%;
+      background: radial-gradient(circle at center, var(--accent-soft) 0%, transparent 50%);
+      pointer-events: none;
+    }
+
+    .download-card > * { position: relative; z-index: 1; }
+
+    .download-card h2 {
+      font-size: 34px;
+      margin-bottom: 16px;
+      letter-spacing: -0.025em;
+    }
+
+    .download-card p {
+      color: var(--text-dim);
+      margin-bottom: 32px;
+      font-size: 17px;
+    }
+
+    .download-info {
+      margin-top: 36px;
+      padding-top: 28px;
+      border-top: 1px solid var(--border);
+      font-size: 13px;
+      color: var(--text-dimmer);
+      display: flex;
+      justify-content: center;
+      gap: 24px;
+      flex-wrap: wrap;
+    }
+
+    .download-info a {
+      color: inherit;
+      text-decoration: none;
+      transition: color 0.2s ease;
+    }
+
+    .download-info a:hover { color: var(--accent); }
+
+    /* ====================================================== */
+    /*  Footer                                                */
+    /* ====================================================== */
+
+    footer {
+      padding: 50px 24px;
+      border-top: 1px solid var(--border);
+      text-align: center;
+      color: var(--text-dimmer);
+      font-size: 14px;
+      transition: border-color 0.3s ease;
+    }
+
+    footer a {
+      color: var(--text-dim);
+      text-decoration: none;
+      transition: color 0.2s ease;
+    }
+
+    footer a:hover { color: var(--accent); }
+
+    /* Helpers */
+    .highlight {
+      background: var(--accent-soft);
+      color: var(--accent);
+      padding: 2px 8px;
+      border-radius: 4px;
+      font-weight: 500;
+    }
+  </style>
+</head>
+<body>
+
+<!-- ============================ NAV ============================ -->
+<nav>
+  <div class="nav-inner">
+    <a href="#" class="nav-brand">
+      <img src="SubFlow.ico" alt="SubFlow">
+      <span>SubFlow</span>
+    </a>
+    <div class="nav-links">
+      <a href="#features">Características</a>
+      <a href="#how">Cómo funciona</a>
+      <button id="themeToggle" class="theme-toggle" aria-label="Cambiar tema">🌙</button>
+      <a href="#download" class="nav-cta">Descargar</a>
+    </div>
+  </div>
+</nav>
+
+<!-- ============================ HERO ============================ -->
+<header class="hero">
+  <img src="SubFlow.ico" alt="SubFlow logo" class="hero-logo">
+
+  <span class="hero-eyebrow">Gratis · Sin Internet · Sin API Keys</span>
+
+  <h1>
+    Edita subtítulos como un<br>
+    <span class="accent">profesional</span>, sin pagar nada
+  </h1>
+
+  <p>
+    SubFlow transcribe tus videos y audios automáticamente con IA Whisper —
+    todo en tu computadora, sin enviar nada a la nube. Edita, corrige y exporta
+    en formato SRT, VTT o ASS.
+  </p>
+
+  <div class="hero-buttons">
+    <a href="https://github.com/ylimecc/SubFlow/releases/latest/download/SubFlow.exe"
+       class="btn btn-primary">
+      <span>⬇</span> Descargar para Windows 10/11
+    </a>
+  </div>
+
+  <div class="hero-meta">
+    <span>✓ Windows 10/11 (64-bit)</span>
+    <span>✓ ~300 MB</span>
+    <span>✓ Funciona offline</span>
+  </div>
+</header>
+
+<!-- ============================ SCREENSHOT ============================ -->
+<div class="screenshot-wrap reveal">
+  <div class="screenshot">
+    <span>📸 Aquí va una captura de la app (screenshot.png en docs/)</span>
+  </div>
+</div>
+
+<!-- ============================ FEATURES ============================ -->
+<section id="features">
+  <div class="section-inner">
+    <div class="section-header reveal">
+      <h2>Todo lo que necesitas en un solo lugar</h2>
+      <p>Diseñado para que tu flujo sea fluido y rápido,
+         desde la transcripción inicial hasta el archivo final.</p>
+    </div>
+
+    <div class="features-grid">
+      <div class="feature reveal">
+        <div class="feature-icon">🎙</div>
+        <h3>Transcripción automática</h3>
+        <p>Whisper de OpenAI corriendo localmente. Genera subtítulos desde MP4, MP3 y otros formatos sin enviar audio a internet.</p>
+      </div>
+
+      <div class="feature reveal">
+        <div class="feature-icon">⚡</div>
+        <h3>Edición fluida</h3>
+        <p>Un clic abre el editor en sitio. Backspace mueve palabras al subtítulo anterior. Atajos completos de teclado.</p>
+      </div>
+
+      <div class="feature reveal">
+        <div class="feature-icon">🎯</div>
+        <h3>Segmentación inteligente</h3>
+        <p>Detecta las pausas reales del habla para cortar subtítulos donde tiene sentido, no donde Whisper los junta.</p>
+      </div>
+
+      <div class="feature reveal">
+        <div class="feature-icon">✨</div>
+        <h3>Auto-formato profesional</h3>
+        <p>2 líneas balanceadas, 42 caracteres máximo por línea. Estándar Netflix listo desde la transcripción.</p>
+      </div>
+
+      <div class="feature reveal">
+        <div class="feature-icon">🎬</div>
+        <h3>Karaoke en vivo</h3>
+        <p>Mientras se reproduce el video, la palabra que se está diciendo se ilumina. Verifica sincronía al instante.</p>
+      </div>
+
+      <div class="feature reveal">
+        <div class="feature-icon">💾</div>
+        <h3>Multi-formato</h3>
+        <p>Importa y exporta SRT, VTT, ASS/SSA. También TXT plano para enviar a revisión humana.</p>
+      </div>
+
+      <div class="feature reveal">
+        <div class="feature-icon">↶</div>
+        <h3>Deshacer ilimitado</h3>
+        <p>Ctrl+Z global: revierte ediciones de texto, cambios de tiempo, fusiones, transcripciones enteras.</p>
+      </div>
+
+      <div class="feature reveal">
+        <div class="feature-icon">🌐</div>
+        <h3>Multilingüe</h3>
+        <p>99 idiomas soportados por Whisper. Optimizado para español latino, también inglés, portugués, francés y más.</p>
+      </div>
+
+      <div class="feature reveal">
+        <div class="feature-icon">📊</div>
+        <h3>Avisos de calidad</h3>
+        <p>Detecta automáticamente subtítulos demasiado cortos, largos o con velocidad de lectura excesiva.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============================ HOW IT WORKS ============================ -->
+<section id="how">
+  <div class="section-inner">
+    <div class="section-header reveal">
+      <h2>Cómo funciona</h2>
+      <p>Tres pasos simples para tener subtítulos profesionales.</p>
+    </div>
+
+    <div class="steps">
+      <div class="step reveal">
+        <h3>Descarga y abre</h3>
+        <p>Un solo <span class="highlight">.exe portable</span>. Sin instalar Python, sin instalar dependencias. Doble clic y listo.</p>
+      </div>
+
+      <div class="step reveal">
+        <h3>Carga tu video o audio</h3>
+        <p>MP4, MP3 y muchos más. SubFlow te pregunta si quieres transcribir automáticamente o cargar subtítulos existentes.</p>
+      </div>
+
+      <div class="step reveal">
+        <h3>Edita y exporta</h3>
+        <p>Corrige errores con un clic. Mueve palabras entre subtítulos con teclado. Guarda en SRT, VTT, ASS o TXT.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============================ TECH ============================ -->
+<section id="tech">
+  <div class="section-inner">
+    <div class="section-header reveal">
+      <h2>Construido con tecnología abierta</h2>
+      <p>Sin servicios cloud propietarios. Todo el procesamiento ocurre en tu máquina.</p>
+    </div>
+    <div class="tech-grid reveal">
+      <span class="tech-chip">Python 3</span>
+      <span class="tech-chip">PyQt6</span>
+      <span class="tech-chip">faster-whisper</span>
+      <span class="tech-chip">CTranslate2</span>
+      <span class="tech-chip">PyAV (FFmpeg)</span>
+      <span class="tech-chip">PyInstaller</span>
+    </div>
+  </div>
+</section>
+
+<!-- ============================ DOWNLOAD ============================ -->
+<section id="download">
+  <div class="section-inner">
+    <div class="download-card reveal">
+      <h2>Empieza ahora</h2>
+      <p>Descarga el ejecutable, ábrelo, y en segundos estás transcribiendo tu primer video.</p>
+
+      <a href="https://github.com/ylimecc/SubFlow/releases/latest/download/SubFlow.exe"
+         class="btn btn-primary" style="padding: 18px 36px; font-size: 17px;">
+        <span>⬇</span> Descargar SubFlow para Windows
+      </a>
+
+      <div class="download-info">
+        <span>Windows 10/11 64-bit</span>
+        <span>~300 MB</span>
+        <span>Sin instalación</span>
+        <span>100% gratis</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============================ FOOTER ============================ -->
+<footer>
+  <p>Hecho con 🧠 por <strong>@ylimecc</strong></p>
+  <p style="margin-top: 10px; font-size: 12px;">
+    SubFlow es software libre. Usa Whisper de OpenAI vía faster-whisper de SYSTRAN.
+  </p>
+</footer>
+
+<script>
+  // ====== Theme toggle (claro / oscuro) =====================
+  const html = document.documentElement;
+  const toggle = document.getElementById('themeToggle');
+
+  // Inicializa el tema:
+  // 1. Lo guardado en localStorage gana
+  // 2. Si no, respeta la preferencia del sistema
+  function getInitialTheme() {
+    const saved = localStorage.getItem('subflow-theme');
+    if (saved) return saved;
+    return window.matchMedia('(prefers-color-scheme: light)').matches ? 'light' : 'dark';
+  }
+
+  function applyTheme(theme) {
+    html.setAttribute('data-theme', theme);
+    toggle.textContent = theme === 'dark' ? '☀' : '🌙';
+    toggle.setAttribute('aria-label', theme === 'dark' ? 'Cambiar a tema claro' : 'Cambiar a tema oscuro');
+  }
+
+  applyTheme(getInitialTheme());
+
+  toggle.addEventListener('click', () => {
+    const current = html.getAttribute('data-theme');
+    const next = current === 'dark' ? 'light' : 'dark';
+    applyTheme(next);
+    localStorage.setItem('subflow-theme', next);
+  });
+
+  // ====== Reveal on scroll (Intersection Observer) ==========
+  const observer = new IntersectionObserver(
+    (entries) => {
+      entries.forEach((entry, i) => {
+        if (entry.isIntersecting) {
+          // Pequeño delay escalonado para que se vea como cascada
+          setTimeout(() => entry.target.classList.add('visible'), i * 60);
+          observer.unobserve(entry.target);
+        }
+      });
+    },
+    { threshold: 0.12, rootMargin: '0px 0px -50px 0px' }
+  );
+
+  document.querySelectorAll('.reveal').forEach(el => observer.observe(el));
+</script>
+
+</body>
+</html>

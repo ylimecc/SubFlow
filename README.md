@@ -24,7 +24,7 @@ Una aplicación de escritorio para Windows que **transcribe video/audio automát
 - ✨ Auto-formato estilo Netflix (2 líneas balanceadas, 42 caracteres)
 - 🎬 Highlight de palabra estilo karaoke durante la reproducción
 - 💾 Multi-formato: SRT, VTT, ASS/SSA, TXT
-- 🌐 99 idiomas soportados
+- 🌐 Multilingüe: español, inglés, portugués, francés y detección automática
 - 🔒 100% offline — tu audio nunca sale de tu computadora
 
 ## Descargar

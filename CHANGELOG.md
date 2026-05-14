@@ -7,6 +7,43 @@ y el versionado sigue [Semantic Versioning](https://semver.org/lang/es/).
 
 ---
 
+## [v1.0.2] — 2026-05-14
+
+### ✨ Features nuevas
+
+- **Snap a vecinos en el timeline**: al arrastrar un cue cerca de otro, los bordes se "pegan" automáticamente. Mantené `Shift` presionado para escapar el snap.
+- **Prevención de overlap**: el timeline ya no permite que arrastres un cue sobre otro. Se clampa al borde del vecino.
+- **Recientes (`Ctrl+R`)**: nuevo botón "📂 Recientes" en la toolbar con los últimos 10 archivos abiertos. Persiste entre sesiones.
+- **Auto-save cada 30s**: si la app crashea, podés recuperar el trabajo no guardado al reabrir el archivo.
+- **Atajos para nudge cues**:
+  - `Shift+→` / `Shift+←` mueve el cue seleccionado ±100ms
+  - `Ctrl+Shift+→` / `Ctrl+Shift+←` mueve ±10ms (ajuste fino)
+
+### 🏗 Refactor interno (transparente para el usuario)
+
+El monolito de 3856 líneas se dividió en 14 módulos limpios bajo `subflow/`:
+- `models.py`, `utils.py`
+- `io/` (parsers, serializers, encoding, time_format)
+- `format/wrap.py`
+- `transcription/worker.py`
+- `ui/` (delegate, timeline, dialogs)
+
+Beneficios: código más navegable, pure functions testeables sin Qt, más fácil agregar features.
+
+### 🐛 Fixes menores
+
+- Workflow CI actualizado a Node.js 24
+- Tests corren también en Python 3.13
+- Algunos `except: pass` silenciosos ahora loguean al perf log
+- Código dead removido (helper `_commit_typing` que era no-op)
+
+### 🚀 Performance
+
+- Snapshot de undo: ~1500x más rápido (comparte refs de WordTiming)
+- Highlight del karaoke: ~200x más rápido (cursor + bisect)
+
+---
+
 ## [v1.0.1] — 2026-05-14
 
 ### 🚀 Performance
@@ -61,5 +98,6 @@ Primera versión pública.
 - Multilingüe: español, inglés, portugués, francés y detección automática
 - 100% offline
 
+[v1.0.2]: https://github.com/ylimecc/SubFlow/releases/tag/v1.0.2
 [v1.0.1]: https://github.com/ylimecc/SubFlow/releases/tag/v1.0.1
 [v1.0.0]: https://github.com/ylimecc/SubFlow/releases/tag/v1.0.0

@@ -10,7 +10,23 @@
   <meta property="og:title" content="SubFlow — Editor de subtítulos con transcripción automática">
   <meta property="og:description" content="Transcribe y edita subtítulos en tu computadora, sin enviar audio a la nube. Gratis y open source.">
   <meta property="og:type" content="website">
+  <meta property="og:url" content="https://ylimecc.github.io/SubFlow/">
+  <meta property="og:image" content="https://ylimecc.github.io/SubFlow/screenshot.png">
+  <meta property="og:image:width" content="1918">
+  <meta property="og:image:height" content="1006">
+  <meta property="og:image:alt" content="SubFlow en accion: editor de subtitulos con video, tabla y preview en vivo">
   <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:image" content="https://ylimecc.github.io/SubFlow/screenshot.png">
+  <script>
+    // Aplicar tema antes del primer paint para evitar FOUC.
+    (function () {
+      try {
+        var saved = localStorage.getItem('subflow-theme');
+        var theme = saved || (window.matchMedia('(prefers-color-scheme: light)').matches ? 'light' : 'dark');
+        document.documentElement.setAttribute('data-theme', theme);
+      } catch (e) { /* localStorage bloqueado: queda el data-theme="dark" del HTML */ }
+    })();
+  </script>
   <style>
     /* ====================================================== */
     /*  Variables: tema oscuro (default)                      */
@@ -118,11 +134,19 @@
       position: sticky;
       top: 0;
       z-index: 100;
-      background: color-mix(in srgb, var(--bg) 85%, transparent);
-      backdrop-filter: blur(16px);
-      -webkit-backdrop-filter: blur(16px);
+      /* Fallback opaco para navegadores sin color-mix() o backdrop-filter */
+      background: var(--bg-elev);
       border-bottom: 1px solid var(--border);
       transition: background-color 0.3s ease, border-color 0.3s ease;
+    }
+    @supports (background: color-mix(in srgb, red, blue)) {
+      nav { background: color-mix(in srgb, var(--bg) 85%, transparent); }
+    }
+    @supports ((backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px))) {
+      nav {
+        backdrop-filter: blur(16px);
+        -webkit-backdrop-filter: blur(16px);
+      }
     }
     .nav-inner {
       max-width: 1120px;
@@ -334,6 +358,10 @@
       background: var(--bg-card);
       border-color: var(--border-strong);
       transform: translateY(-1px);
+    }
+    .btn-large {
+      padding: 16px 30px;
+      font-size: 16px;
     }
     .hero-meta {
       margin-top: 32px;
@@ -672,7 +700,7 @@
     en formato SRT, VTT o ASS.
   </p>
   <div class="hero-buttons">
-    <a href="https://github.com/ylimecc/SubFlow/releases/latest/download/SubFlow.exe"
+    <a href="https://github.com/ylimecc/SubFlow/releases/latest"
        class="btn btn-primary">
       <span>⬇</span> Descargar para Windows 10/11
     </a>
@@ -686,7 +714,10 @@
 <!-- ============================ SCREENSHOT ============================ -->
 <div class="screenshot-wrap reveal">
   <div class="screenshot">
-    <img src="screenshot.png" alt="SubFlow en acción: editor de subtítulos con video, tabla y preview en vivo">
+    <img src="screenshot.png"
+         alt="SubFlow en acción: editor de subtítulos con video, tabla y preview en vivo"
+         width="1918" height="1006"
+         loading="lazy" decoding="async">
   </div>
 </div>
 <!-- ============================ FEATURES ============================ -->
@@ -782,8 +813,8 @@
     <div class="download-card reveal">
       <h2>Empieza ahora</h2>
       <p>Descarga el ejecutable, ábrelo, y en segundos estás transcribiendo tu primer video.</p>
-      <a href="https://github.com/ylimecc/SubFlow/releases/latest/download/SubFlow.exe"
-         class="btn btn-primary" style="padding: 16px 30px; font-size: 16px;">
+      <a href="https://github.com/ylimecc/SubFlow/releases/latest"
+         class="btn btn-primary btn-large">
         <span>⬇</span> Descargar SubFlow para Windows
       </a>
       <div class="download-info">
@@ -819,24 +850,20 @@
   <p>Hecho por <a href="https://ylimecc.github.io/portafolio/" target="_blank" rel="noopener"><strong>ylimecc</strong></a></p>
 </footer>
 <script>
+  // El tema ya se aplica en <head> antes del primer paint.
+  // Aqui solo sincronizamos el icono del toggle y enganchamos el click.
   const html = document.documentElement;
   const toggle = document.getElementById('themeToggle');
-  function getInitialTheme() {
-    const saved = localStorage.getItem('subflow-theme');
-    if (saved) return saved;
-    return window.matchMedia('(prefers-color-scheme: light)').matches ? 'light' : 'dark';
-  }
-  function applyTheme(theme) {
-    html.setAttribute('data-theme', theme);
+  function syncToggle(theme) {
     toggle.textContent = theme === 'dark' ? '☀' : '🌙';
     toggle.setAttribute('aria-label', theme === 'dark' ? 'Cambiar a tema claro' : 'Cambiar a tema oscuro');
   }
-  applyTheme(getInitialTheme());
+  syncToggle(html.getAttribute('data-theme'));
   toggle.addEventListener('click', () => {
-    const current = html.getAttribute('data-theme');
-    const next = current === 'dark' ? 'light' : 'dark';
-    applyTheme(next);
-    localStorage.setItem('subflow-theme', next);
+    const next = html.getAttribute('data-theme') === 'dark' ? 'light' : 'dark';
+    html.setAttribute('data-theme', next);
+    syncToggle(next);
+    try { localStorage.setItem('subflow-theme', next); } catch (e) {}
   });
   const observer = new IntersectionObserver(
     (entries) => {

@@ -13,6 +13,11 @@ __pycache__/
 .venv/
 venv/
 env/
+.pytest_cache/
+pytest-cache-files-*/
+
+# Worktrees temporales que crea Claude Code
+.claude/
 
 # IDE
 .vscode/

@@ -1,0 +1,5 @@
+# Dependencias necesarias SOLO para empaquetar el .exe (no para correr SubFlow).
+# Se instalan junto con requirements.txt en build.bat.
+
+-r requirements.txt
+pyinstaller==6.20.0

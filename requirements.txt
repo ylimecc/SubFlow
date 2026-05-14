@@ -1,0 +1,13 @@
+# Dependencias de runtime de SubFlow.
+# Versiones pineadas a las que se usaron para el ultimo build estable.
+# Si subis alguna, probalo en una venv limpia ANTES de tagear release.
+
+PyQt6==6.11.0
+
+# Transcripcion automatica con Whisper.
+# faster-whisper trae ctranslate2, av (PyAV) y onnxruntime como dependencias.
+# Las pineamos explicitamente porque cualquier cambio en su ABI rompe el bundle.
+faster-whisper==1.2.1
+ctranslate2==4.7.1
+av==17.0.1
+onnxruntime==1.26.0

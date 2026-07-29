@@ -1,6 +1,6 @@
-/* Página offline de Benny: sin conexión, cualquier navegación muestra offline.html */
+/* Página de Benny: sin conexión, cualquier navegación muestra el 404 cacheado */
 const CACHE = "benny-offline-v1";
-const OFFLINE = new URL("offline.html", self.location).pathname;
+const OFFLINE = new URL("404.html", self.location).pathname;
 
 self.addEventListener("install", e => {
   e.waitUntil(

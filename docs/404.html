@@ -38,6 +38,7 @@
       background-attachment: fixed;
       -webkit-font-smoothing: antialiased;
       min-height: 100vh;
+      min-height: 100svh;
       display: grid;
       place-items: center;
       padding: 4.5rem 1.25rem 2rem;
@@ -94,7 +95,7 @@
       padding: 16px 16px 8px;
       box-shadow: 0 10px 30px rgba(3, 7, 18, 0.5);
     }
-    canvas { display: block; width: 100%; image-rendering: pixelated; border-radius: var(--r); touch-action: manipulation; }
+    canvas { display: block; width: 100%; height: auto; image-rendering: pixelated; border-radius: var(--r); touch-action: manipulation; }
     .hint {
       font-family: var(--mono);
       font-size: 0.72rem;
@@ -108,6 +109,15 @@
       border-radius: 4px;
       padding: 0 5px;
       font-family: inherit;
+    }
+    .hint-tel { display: none; }
+    @media (pointer: coarse) {
+      .hint-pc { display: none; }
+      .hint-tel { display: inline; }
+    }
+    @media (max-width: 480px) {
+      body { padding: 4rem 0.6rem 1.5rem; }
+      .card { padding: 10px 10px 6px; border-radius: 10px; }
     }
 
     .back {
@@ -145,7 +155,7 @@
 
     <div class="card">
       <canvas id="game" width="760" height="300"></canvas>
-      <p class="hint"><kbd>Espacio</kbd> / <kbd>&#8593;</kbd> / clic para saltar &middot; <kbd>R</kbd> reinicia &middot; &iexcl;a las palomas altas NO les saltes!</p>
+      <p class="hint"><span class="hint-pc"><kbd>Espacio</kbd> / <kbd>&#8593;</kbd> / clic para saltar &middot; <kbd>R</kbd> reinicia &middot; </span><span class="hint-tel">Toca la pantalla para saltar &middot; </span>&iexcl;a las palomas altas NO les saltes!</p>
     </div>
 
     <a class="back" href="C:/Program Files/Git/SubFlow/">&larr; Volver al inicio</a>
@@ -157,11 +167,21 @@
 "use strict";
 const cvs = document.getElementById("game");
 const ctx = cvs.getContext("2d");
-const W = 760, H = 300, GROUND = 252;
+const H = 300, GROUND = 252;
 const DPR = Math.min(window.devicePixelRatio || 1, 3);
-cvs.width = W * DPR; cvs.height = H * DPR;
-ctx.scale(DPR, DPR);
-ctx.imageSmoothingEnabled = false;
+const TOUCH = matchMedia("(pointer: coarse)").matches;
+let W = 760;
+function sizeCanvas(){
+  // en pantallas chicas el mundo lógico se hace angosto para que todo se vea grande
+  const cssW = cvs.clientWidth || 760;
+  W = cssW < 600 ? Math.max(400, Math.round(cssW * 1.25)) : 760;
+  cvs.width = W * DPR; cvs.height = H * DPR;
+  ctx.setTransform(DPR, 0, 0, DPR, 0, 0);
+  ctx.imageSmoothingEnabled = false;
+}
+sizeCanvas();
+let resizeT = null;
+addEventListener("resize", () => { clearTimeout(resizeT); resizeT = setTimeout(sizeCanvas, 150); });
 
 /* ---------- paleta ---------- */
 const C = {
@@ -300,7 +320,7 @@ function spawn(){
 
 /* ---------- lógica ---------- */
 function step(dt){
-  speed = Math.min(speed + 22*dt, 1100);
+  speed = Math.min(speed + 22*dt, W < 600 ? 950 : 1100);
   dist += speed*dt;
   score = Math.floor(dist/24);
   if (score >= nextMilestone){
@@ -422,13 +442,14 @@ function draw(){
   ctx.textAlign = "center";
   if (state === "idle"){
     ctx.font = "bold 20px " + FONT;
-    ctx.fillText("Pulsa ESPACIO o haz clic para jugar", W/2, 120);
+    ctx.fillText(TOUCH ? "Toca la pantalla para jugar" : "Pulsa ESPACIO o haz clic para jugar", W/2, 120);
   } else if (state === "over"){
     ctx.font = "bold 28px " + FONT;
     ctx.fillText("GAME OVER", W/2, 112);
     ctx.font = "14px " + FONT;
     ctx.fillStyle = night ? "#94a3b8" : MUTED;
-    ctx.fillText(newBest ? "¡Nuevo récord! · Espacio o clic para reiniciar" : "Espacio o clic para reiniciar", W/2, 140);
+    const rr = TOUCH ? "Toca para reiniciar" : "Espacio o clic para reiniciar";
+    ctx.fillText(newBest ? "¡Nuevo récord! · " + rr : rr, W/2, 140);
   }
 
   if (deadFlash > 0){

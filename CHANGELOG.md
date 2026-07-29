@@ -7,7 +7,7 @@ y el versionado sigue [Semantic Versioning](https://semver.org/lang/es/).
 
 ---
 
-## [v1.0.2] — 2026-05-14
+## [v1.0.2] - 2026-05-14
 
 ### ✨ Features nuevas
 
@@ -44,7 +44,7 @@ Beneficios: código más navegable, pure functions testeables sin Qt, más fáci
 
 ---
 
-## [v1.0.1] — 2026-05-14
+## [v1.0.1] - 2026-05-14
 
 ### 🚀 Performance
 - Open de archivos SRT grandes ahora es **instantáneo** (eran 30s+ antes)
@@ -85,7 +85,7 @@ Beneficios: código más navegable, pure functions testeables sin Qt, más fáci
 
 ---
 
-## [v1.0.0] — 2026-05-12
+## [v1.0.0] - 2026-05-12
 
 Primera versión pública.
 

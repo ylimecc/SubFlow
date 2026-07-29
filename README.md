@@ -4,7 +4,7 @@
 
 # SubFlow
 
-**Editor de subtítulos con transcripción automática — local, gratis, sin API keys.**
+**Editor de subtítulos con transcripción automática: local, gratis, sin API keys.**
 
 [**🌐 Sitio web**](https://ylimecc.github.io/SubFlow/) · [**⬇ Descargar el .exe**](https://github.com/ylimecc/SubFlow/releases/latest)
 
@@ -14,7 +14,7 @@
 
 ## ¿Qué es SubFlow?
 
-Una aplicación de escritorio para Windows que **transcribe video/audio automáticamente** usando Whisper de OpenAI corriendo localmente, y te deja **editar los subtítulos** con una interfaz fluida y profesional — gratis y sin enviar nada a la nube.
+Una aplicación de escritorio para Windows que **transcribe video/audio automáticamente** usando Whisper de OpenAI corriendo localmente, y te deja **editar los subtítulos** con una interfaz fluida y profesional: gratis y sin enviar nada a la nube.
 
 ## Características
 
@@ -25,7 +25,7 @@ Una aplicación de escritorio para Windows que **transcribe video/audio automát
 - 🎬 Highlight de palabra estilo karaoke durante la reproducción
 - 💾 Multi-formato: SRT, VTT, ASS/SSA, TXT
 - 🌐 Multilingüe: español, inglés, portugués, francés y detección automática
-- 🔒 100% offline — tu audio nunca sale de tu computadora
+- 🔒 100% offline: tu audio nunca sale de tu computadora
 
 ## Descargar
 

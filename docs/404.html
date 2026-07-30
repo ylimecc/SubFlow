@@ -2,6 +2,18 @@
 <html lang="es">
 <head>
   <meta charset="UTF-8">
+
+  <!-- Esta página aparece en cualquier ruta rota, así que fija la raíz del sitio
+       antes de resolver iconos y enlaces. -->
+  <base href="/SubFlow/">
+  <script>
+    (function () {
+      var seg = location.pathname.split('/')[1];
+      document.querySelector('base').href =
+        /\.github\.io$/.test(location.hostname) && seg ? '/' + seg + '/' : '/';
+    })();
+  </script>
+
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta name="description" content="Página no encontrada, pero Benny necesita quien lo acompañe.">
   <meta name="robots" content="noindex">
@@ -142,7 +154,7 @@
 <body>
 
   <header class="nav">
-    <a href="C:/Program Files/Git/SubFlow/" class="nav__brand">SubFlow<span class="nav__cursor">_</span></a>
+    <a href="./" class="nav__brand">SubFlow<span class="nav__cursor">_</span></a>
   </header>
 
   <main class="wrap">
@@ -158,7 +170,7 @@
       <p class="hint"><span class="hint-pc"><kbd>Espacio</kbd> / <kbd>&#8593;</kbd> / clic para saltar &middot; <kbd>R</kbd> reinicia &middot; </span><span class="hint-tel">Toca la pantalla para saltar &middot; </span>&iexcl;a las palomas altas NO les saltes!</p>
     </div>
 
-    <a class="back" href="C:/Program Files/Git/SubFlow/">&larr; Volver al inicio</a>
+    <a class="back" href="./">&larr; Volver al inicio</a>
     <p class="foot">© 2026 Emily R. Castellanos</p>
   </main>
 
@@ -473,7 +485,7 @@ document.addEventListener("visibilitychange", () => { last = null; });
 reset();
 requestAnimationFrame(frame);
 })();
-if ("serviceWorker" in navigator) navigator.serviceWorker.register("C:/Program Files/Git/SubFlow/sw.js");
+if ("serviceWorker" in navigator) navigator.serviceWorker.register("sw.js");
 </script>
 </body>
 </html>

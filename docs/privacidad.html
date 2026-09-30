@@ -1,0 +1,231 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Privacidad · SubFlow</title>
+<meta name="description" content="Política de privacidad de SubFlow: transcribe en tu computadora y no envía tu audio ni tus datos a nadie. Privacy policy: SubFlow transcribes on your computer and sends no audio or data to anyone.">
+<meta name="theme-color" content="#0a0a0b">
+<link rel="icon" type="image/x-icon" href="SubFlow.ico">
+<style>
+  :root, [data-theme="dark"] {
+    --bg: #0a0a0b;
+    --bg-card: #1c1c20;
+    --border: #2a2a2e;
+    --text: #f4f4f5;
+    --text-dim: #a1a1aa;
+    --text-dimmer: #71717a;
+    --accent: #fbbf24;
+    --accent-soft: rgba(251, 191, 36, 0.12);
+  }
+  [data-theme="light"] {
+    --bg: #fafafa;
+    --bg-card: #ffffff;
+    --border: #e4e4e7;
+    --text: #18181b;
+    --text-dim: #52525b;
+    --text-dimmer: #71717a;
+    --accent: #b45309;
+    --accent-soft: rgba(217, 119, 6, 0.10);
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html, body { max-width: 100%; overflow-x: hidden; }
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    line-height: 1.65;
+    -webkit-font-smoothing: antialiased;
+  }
+  a { color: var(--accent); text-underline-offset: 3px; }
+  a:focus-visible, button:focus-visible { outline: 2px solid var(--accent); outline-offset: 3px; border-radius: 4px; }
+  .wrap { max-width: 760px; margin: 0 auto; padding: 0 16px; }
+  header {
+    display: flex; align-items: center; justify-content: space-between; gap: 12px;
+    padding: 20px 0; border-bottom: 1px solid var(--border);
+  }
+  .brand { display: flex; align-items: center; gap: 10px; color: var(--text); text-decoration: none; font-weight: 700; font-size: 18px; }
+  .brand img { width: 28px; height: 28px; }
+  .top-actions { display: flex; align-items: center; gap: 8px; }
+  .top-link, .lang-btn {
+    font: inherit; font-size: 14px; color: var(--text-dim); background: none;
+    border: 1px solid var(--border); border-radius: 8px; padding: 6px 12px;
+    text-decoration: none; cursor: pointer;
+  }
+  .top-link:hover, .lang-btn:hover { color: var(--text); }
+  main { padding: 40px 0 24px; }
+  article[lang] { display: none; }
+  html[lang="es"] article[lang="es"], html[lang="en"] article[lang="en"] { display: block; }
+  html[lang="es"] [lang="en"]:not(html):not(article), html[lang="en"] [lang="es"]:not(html):not(article) { display: none; }
+  .eyebrow { color: var(--accent); font-size: 13px; font-weight: 600; letter-spacing: .08em; text-transform: uppercase; }
+  h1 { font-size: clamp(28px, 5vw, 40px); line-height: 1.15; margin: 6px 0 8px; }
+  .updated { color: var(--text-dimmer); font-size: 14px; }
+  .tldr {
+    margin: 28px 0 8px; padding: 16px 20px; background: var(--accent-soft);
+    border-left: 3px solid var(--accent); border-radius: 0 10px 10px 0;
+  }
+  h2 { font-size: 20px; margin: 36px 0 12px; }
+  p, li { color: var(--text-dim); }
+  p + p { margin-top: 12px; }
+  ul { padding-left: 20px; }
+  li { margin: 8px 0; }
+  strong { color: var(--text); }
+  code {
+    font-family: "Cascadia Mono", Consolas, monospace; font-size: .9em;
+    background: var(--bg-card); border: 1px solid var(--border); border-radius: 5px; padding: 1px 6px;
+    overflow-wrap: anywhere;
+  }
+  footer {
+    display: flex; flex-wrap: wrap; gap: 12px 20px; justify-content: space-between;
+    padding: 24px 0 40px; border-top: 1px solid var(--border); color: var(--text-dimmer); font-size: 14px;
+  }
+  footer nav { display: flex; flex-wrap: wrap; gap: 16px; }
+  footer a { color: var(--text-dim); text-decoration: none; }
+  footer a:hover { color: var(--text); }
+</style>
+</head>
+<body>
+
+<div class="wrap">
+  <header>
+    <a class="brand" href="./"><img src="SubFlow.ico" alt="">SubFlow</a>
+    <div class="top-actions">
+      <a class="top-link" href="https://github.com/ylimecc/SubFlow" rel="noopener">GitHub</a>
+      <button class="lang-btn" id="langBtn" type="button" aria-label="Switch language">EN</button>
+    </div>
+  </header>
+
+  <main>
+    <!-- ================= ESPAÑOL ================= -->
+    <article lang="es">
+      <p class="eyebrow">Privacidad</p>
+      <h1>Política de privacidad</h1>
+      <p class="updated">Última actualización: 30 de septiembre de 2026</p>
+
+      <div class="tldr">
+        <p><strong>En resumen:</strong> SubFlow transcribe y edita subtítulos en tu computadora. El audio de tus archivos nunca sale de ella. No pide registro, no muestra anuncios y no envía estadísticas ni información personal a nadie.</p>
+      </div>
+
+      <h2>Qué utiliza SubFlow y para qué</h2>
+      <ul>
+        <li><strong>Los archivos que abres.</strong> SubFlow lee el video, el audio o los subtítulos que eliges para reproducirlos, transcribirlos y editarlos en tu computadora. No los copia a otro lugar ni los sube a internet.</li>
+        <li><strong>Internet, solo para descargar modelos.</strong> La primera vez que usas un tamaño de modelo de Whisper, SubFlow lo descarga de Hugging Face (<code>huggingface.co</code>). Esa descarga no incluye tu audio ni datos tuyos. Hugging Face puede registrar datos técnicos, como tu dirección IP, de acuerdo con su <a href="https://huggingface.co/privacy" rel="noopener">política de privacidad</a>. Después, la transcripción funciona sin conexión.</li>
+      </ul>
+
+      <h2>Qué se guarda y dónde</h2>
+      <ul>
+        <li><strong>Subtítulos:</strong> en la carpeta que elijas al guardar. Mientras editas, SubFlow guarda cada 30 segundos una copia de seguridad junto al archivo (<code>nombre.srt.autosave</code>) y la borra cuando guardas.</li>
+        <li><strong>Modelos de Whisper:</strong> en <code>%USERPROFILE%\.cache\huggingface</code>. Ocupan de 75 MB a 1.5 GB cada uno y no se borran al desinstalar SubFlow, porque otras aplicaciones pueden usarlos. Si ninguna otra los usa, puedes borrarlos eliminando esa carpeta.</li>
+        <li><strong>Archivos recientes:</strong> la ruta de los últimos subtítulos que abriste, con qué video y en qué minuto ibas, para retomar donde lo dejaste. Se guarda en tu usuario de Windows.</li>
+        <li><strong>Registro de errores:</strong> si algo falla, SubFlow anota el error en <code>%LOCALAPPDATA%\SubFlow\logs</code> para que puedas compartirlo si pides ayuda. Nunca se envía solo.</li>
+        <li>Si instalaste SubFlow desde Microsoft Store, los archivos recientes y el registro de errores se borran al desinstalarlo.</li>
+      </ul>
+
+      <h2>Lo que SubFlow no hace</h2>
+      <ul>
+        <li>No envía tu audio, tus videos ni tus subtítulos a internet.</li>
+        <li>No pide registro, cuentas ni claves de API.</li>
+        <li>No muestra anuncios.</li>
+        <li>No incluye estadísticas de uso, rastreadores ni envío automático de errores.</li>
+        <li>No vende ni comparte información, porque no la recopila.</li>
+      </ul>
+
+      <h2>Si lo instalas desde Microsoft Store</h2>
+      <p>Microsoft administra la descarga y las actualizaciones de acuerdo con su <a href="https://privacy.microsoft.com/privacystatement" rel="noopener">declaración de privacidad</a>. Microsoft puede mostrar al desarrollador estadísticas generales, como el número de descargas o de fallos de la aplicación. SubFlow nunca recibe tu nombre, tu correo ni los datos de tu cuenta.</p>
+
+      <h2>Este sitio web</h2>
+      <ul>
+        <li>Está alojado en GitHub Pages y las descargas se ofrecen desde GitHub. GitHub puede registrar datos técnicos, como tu dirección IP, de acuerdo con su <a href="https://docs.github.com/site-policy/privacy-policies/github-general-privacy-statement" rel="noopener">declaración de privacidad</a>.</li>
+        <li>El sitio no usa cookies ni herramientas de estadísticas. Tu navegador guarda únicamente el tema y el idioma que eliges, y una copia de la página de error para mostrarla sin conexión.</li>
+      </ul>
+
+      <h2>Cambios y contacto</h2>
+      <p>Si esta política cambia, la nueva versión se publicará en esta página con su fecha.</p>
+      <p>Si tienes dudas, abre un reporte en <a href="https://github.com/ylimecc/SubFlow/issues" rel="noopener">GitHub</a>. Los reportes son públicos, así que no incluyas datos personales. SubFlow es desarrollado por Ylimec.</p>
+    </article>
+
+    <!-- ================= ENGLISH ================= -->
+    <article lang="en">
+      <p class="eyebrow">Privacy</p>
+      <h1>Privacy policy</h1>
+      <p class="updated">Last updated: September 30, 2026</p>
+
+      <div class="tldr">
+        <p><strong>In short:</strong> SubFlow transcribes and edits subtitles on your computer. The audio in your files never leaves it. It asks for no sign-up, shows no ads and sends no statistics or personal information to anyone.</p>
+      </div>
+
+      <h2>What SubFlow uses and why</h2>
+      <ul>
+        <li><strong>The files you open.</strong> SubFlow reads the video, audio or subtitle files you choose to play, transcribe and edit them on your computer. It does not copy them anywhere else or upload them.</li>
+        <li><strong>The internet, only to download models.</strong> The first time you use a Whisper model size, SubFlow downloads it from Hugging Face (<code>huggingface.co</code>). That download includes none of your audio or data. Hugging Face may log technical data, such as your IP address, under its <a href="https://huggingface.co/privacy" rel="noopener">privacy policy</a>. After that, transcription works offline.</li>
+      </ul>
+
+      <h2>What is saved and where</h2>
+      <ul>
+        <li><strong>Subtitles:</strong> in the folder you choose when you save. While you edit, SubFlow saves a backup next to the file every 30 seconds (<code>name.srt.autosave</code>) and deletes it when you save.</li>
+        <li><strong>Whisper models:</strong> in <code>%USERPROFILE%\.cache\huggingface</code>. Each takes 75 MB to 1.5 GB, and they are not removed when you uninstall SubFlow, because other apps may use them. If no other app uses them, you can delete that folder.</li>
+        <li><strong>Recent files:</strong> the paths of the last subtitle files you opened, which video went with each and where you left off, so you can pick up where you stopped. They are stored in your Windows user profile.</li>
+        <li><strong>Error log:</strong> if something fails, SubFlow writes the error to <code>%LOCALAPPDATA%\SubFlow\logs</code> so you can share it when asking for help. It is never sent automatically.</li>
+        <li>If you installed SubFlow from the Microsoft Store, the recent files and the error log are erased when you uninstall it.</li>
+      </ul>
+
+      <h2>What SubFlow does not do</h2>
+      <ul>
+        <li>It does not send your audio, videos or subtitles to the internet.</li>
+        <li>It does not ask for a sign-up, an account or API keys.</li>
+        <li>It does not show ads.</li>
+        <li>It includes no usage statistics, trackers or automatic error reports.</li>
+        <li>It does not sell or share information, because it does not collect any.</li>
+      </ul>
+
+      <h2>If you install it from the Microsoft Store</h2>
+      <p>Microsoft handles the download and updates under its <a href="https://privacy.microsoft.com/privacystatement" rel="noopener">privacy statement</a>. Microsoft may show the developer general statistics, such as the number of downloads or app crashes. SubFlow never receives your name, email or account details.</p>
+
+      <h2>This website</h2>
+      <ul>
+        <li>It is hosted on GitHub Pages, and downloads are served from GitHub. GitHub may log technical data, such as your IP address, under its <a href="https://docs.github.com/site-policy/privacy-policies/github-general-privacy-statement" rel="noopener">privacy statement</a>.</li>
+        <li>The site uses no cookies or analytics tools. Your browser only stores the theme and language you choose, and a copy of the error page to show it offline.</li>
+      </ul>
+
+      <h2>Changes and contact</h2>
+      <p>If this policy changes, the new version will be published on this page with its date.</p>
+      <p>If you have questions, open an issue on <a href="https://github.com/ylimecc/SubFlow/issues" rel="noopener">GitHub</a>. Issues are public, so do not include personal data. SubFlow is made by Ylimec.</p>
+    </article>
+  </main>
+
+  <footer>
+    <span>© 2026 Ylimec</span>
+    <nav>
+      <a href="./"><span lang="es">Inicio</span><span lang="en">Home</span></a>
+      <a href="https://github.com/ylimecc/SubFlow/issues" rel="noopener"><span lang="es">Reportar un problema</span><span lang="en">Report an issue</span></a>
+      <a href="privacidad.html" aria-current="page"><span lang="es">Privacidad</span><span lang="en">Privacy</span></a>
+    </nav>
+  </footer>
+</div>
+
+<script>
+/* Tema: el mismo que eligio la persona en la portada (subflow-theme).
+   Idioma: el elegido aqui (subflow-lang) o el del navegador. */
+const TITLES = { es: "Privacidad · SubFlow", en: "Privacy · SubFlow" };
+const langBtn = document.getElementById("langBtn");
+let lang = "es";
+try {
+  document.documentElement.dataset.theme = localStorage.getItem("subflow-theme") || "dark";
+  lang = localStorage.getItem("subflow-lang") || (navigator.language || "es").slice(0, 2);
+} catch (e) {}
+if (lang !== "en") lang = "es";
+
+function apply() {
+  document.documentElement.lang = lang;
+  document.title = TITLES[lang];
+  langBtn.textContent = lang === "es" ? "EN" : "ES";
+}
+langBtn.addEventListener("click", () => {
+  lang = lang === "es" ? "en" : "es";
+  try { localStorage.setItem("subflow-lang", lang); } catch (e) {}
+  apply();
+});
+apply();
+</script>
+</body>
+</html>

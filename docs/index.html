@@ -11,12 +11,12 @@
   <meta property="og:description" content="Transcribe y edita subtítulos en tu computadora, sin enviar audio a la nube. Gratis y open source.">
   <meta property="og:type" content="website">
   <meta property="og:url" content="https://ylimecc.github.io/SubFlow/">
-  <meta property="og:image" content="https://ylimecc.github.io/SubFlow/screenshot.png">
-  <meta property="og:image:width" content="1918">
-  <meta property="og:image:height" content="1006">
-  <meta property="og:image:alt" content="SubFlow en accion: editor de subtitulos con video, tabla y preview en vivo">
+  <meta property="og:image" content="https://ylimecc.github.io/SubFlow/screenshot.png?v=2">
+  <meta property="og:image:width" content="1920">
+  <meta property="og:image:height" content="1080">
+  <meta property="og:image:alt" content="SubFlow: subtítulos automáticos en tu computadora, con el video al lado y la línea de tiempo debajo">
   <meta name="twitter:card" content="summary_large_image">
-  <meta name="twitter:image" content="https://ylimecc.github.io/SubFlow/screenshot.png">
+  <meta name="twitter:image" content="https://ylimecc.github.io/SubFlow/screenshot.png?v=2">
   <script>
     // Aplicar tema antes del primer paint para evitar FOUC.
     (function () {
@@ -407,11 +407,56 @@
     .screenshot:hover {
       transform: translateY(-4px) scale(1.005);
     }
+    .screenshot { position: relative; }
     .screenshot img {
+      position: absolute;
+      inset: 0;
       width: 100%;
       height: 100%;
       object-fit: cover;
       display: block;
+      opacity: 0;
+      transition: opacity 0.25s ease-out;
+    }
+    .screenshot img.active { opacity: 1; }
+    .shot-tabs {
+      display: flex;
+      width: fit-content;
+      max-width: 100%;
+      margin: 20px auto 0;
+      padding: 4px;
+      gap: 2px;
+      border: 1px solid var(--border);
+      border-radius: 999px;
+      background: var(--bg-elev);
+    }
+    .shot-tabs button {
+      flex: 1 1 auto;
+      font: inherit;
+      font-size: 14px;
+      font-weight: 500;
+      white-space: nowrap;
+      color: var(--text-dim);
+      background: transparent;
+      border: 0;
+      border-radius: 999px;
+      padding: 8px 18px;
+      cursor: pointer;
+      transition: color 0.15s ease, background-color 0.15s ease, transform 0.16s ease-out;
+    }
+    .shot-tabs button:hover { color: var(--text); }
+    .shot-tabs button:active { transform: scale(0.97); }
+    .shot-tabs button:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+    .shot-tabs button[aria-pressed="true"] {
+      color: var(--accent);
+      background: var(--accent-soft);
+    }
+    @media (max-width: 480px) {
+      .shot-tabs { width: 100%; }
+      .shot-tabs button { font-size: 12.5px; padding: 7px 4px; }
+    }
+    @media (prefers-reduced-motion: reduce) {
+      .screenshot img, .shot-tabs button { transition: none; }
     }
 
     /* ====================================================== */
@@ -713,11 +758,24 @@
 </header>
 <!-- ============================ SCREENSHOT ============================ -->
 <div class="screenshot-wrap reveal">
-  <div class="screenshot">
-    <img src="screenshot.png"
-         alt="SubFlow en acción: editor de subtítulos con video, tabla y preview en vivo"
-         width="1918" height="1006"
-         loading="lazy" decoding="async">
+  <div class="screenshot" id="shots">
+    <img src="capturas/01-editor.webp" alt="Corrige los subtítulos con el video al lado y la línea de tiempo debajo." width="1920" height="1080"
+         decoding="async" class="active" fetchpriority="high">
+    <img src="capturas/02-origen.webp" alt="Abre un video y elige: transcribirlo o cargar subtítulos que ya tengas." width="1920" height="1080"
+         decoding="async" aria-hidden="true" loading="lazy">
+    <img src="capturas/03-transcribir.webp" alt="Elige el idioma y la calidad. El audio nunca sale de tu computadora." width="1920" height="1080"
+         decoding="async" aria-hidden="true" loading="lazy">
+    <img src="capturas/04-buscar.webp" alt="Busca y reemplaza en todo el archivo, con o sin tildes." width="1920" height="1080"
+         decoding="async" aria-hidden="true" loading="lazy">
+    <img src="capturas/05-guardar.webp" alt="Guarda en SRT, VTT o ASS, o exporta solo el texto." width="1920" height="1080"
+         decoding="async" aria-hidden="true" loading="lazy">
+  </div>
+  <div class="shot-tabs" role="group" aria-label="Capturas de SubFlow" aria-controls="shots">
+    <button type="button" aria-pressed="true">Editar</button>
+    <button type="button" aria-pressed="false">Abrir</button>
+    <button type="button" aria-pressed="false">Transcribir</button>
+    <button type="button" aria-pressed="false">Buscar</button>
+    <button type="button" aria-pressed="false">Guardar</button>
   </div>
 </div>
 <!-- ============================ FEATURES ============================ -->
@@ -858,6 +916,17 @@
     { threshold: 0.12, rootMargin: '0px 0px -50px 0px' }
   );
   document.querySelectorAll('.reveal').forEach(el => observer.observe(el));
+
+  const shots = document.querySelectorAll('#shots img');
+  const shotTabs = document.querySelectorAll('.shot-tabs button');
+  shotTabs.forEach((tab, i) => tab.addEventListener('click', () => {
+    shots.forEach((img, j) => {
+      img.classList.toggle('active', i === j);
+      if (i === j) img.removeAttribute('aria-hidden');
+      else img.setAttribute('aria-hidden', 'true');
+    });
+    shotTabs.forEach((t, j) => t.setAttribute('aria-pressed', String(i === j)));
+  }));
 </script>
   <script>if ("serviceWorker" in navigator) navigator.serviceWorker.register("sw.js");</script>
 </body>
